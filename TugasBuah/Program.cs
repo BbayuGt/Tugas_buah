@@ -22,7 +22,26 @@ List<Buah> listBuah = new List<Buah>
 {
     new Buah
     {
-        Name = "Erleazar Pandita Ramadhan"
+
+        Id = 1, Name = "Erleazar Pandita Ramadhan"
+    },
+    new Buah
+    {
+        Id = 2, Name = "Rizkya Ramdan"
+    },
+    new Buah
+    {
+        Id = 3, Name = "Fityah Bayodiansyah Harahap"
+    },
+    new Buah
+    {
+        Id = 4, Name = "Abiyyu Yusak Ilyasa"
+    },
+    new Buah
+    {
+        Id = 5, Name = "Muhammad Dhaifullah Safarullah"
+
+       
     },
     new Buah
     {
@@ -39,6 +58,7 @@ List<Buah> listBuah = new List<Buah>
     new Buah
     {
         Name = "Muhammad Dhaifullah Safarullah"
+
     }
 };
 
@@ -47,6 +67,21 @@ app.MapGet("/api/Buah", () =>
         return listBuah;
     })
     .WithName("/api/Buah");
+
+
+
+app.MapPut("/api/Buah/{id}", (int id, Buah updatedBuah) =>
+{
+    var buah = listBuah.FirstOrDefault(x => x.Id == id);
+
+    if (buah == null)
+        return Results.NotFound("Data tidak ditemukan");
+
+    buah.Name = updatedBuah.Name;
+
+    return Results.Ok(buah);
+});
+
 
 
 app.Run();
