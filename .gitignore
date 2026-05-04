@@ -1,6 +1,10 @@
 .vs/
 bin/
 obj/
+<<<<<<< HEAD
+.vs/
+=======
+>>>>>>> c8b762f048951dc7ddbed38d2a1d6b15c4eaa5c6
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
