@@ -62,6 +62,7 @@ app.MapPost("/api/Buah", (Buah buah) =>
 
     }
 
+app.MapDelete("/api/Buah/{id}", (int id) =>
     return Results.Ok(buah);
 })
 .Accepts<Buah>("application/json")
@@ -73,14 +74,18 @@ app.Run();
 
 app.MapPut("/api/Buah/{id}", (int id, Buah updatedBuah) =>
 {
+    // Mencari data berdasarkan Id
     var buah = listBuah.FirstOrDefault(x => x.Id == id);
 
+    // Jika id tidak ditemukan, kembalikan status 404 Not Found
     if (buah == null)
         return Results.NotFound("Data tidak ditemukan");
 
-    buah.Name = updatedBuah.Name;
+    // Jika ditemukan, hapus data tersebut dari list
+    listBuah.Remove(buah);
 
-    return Results.Ok(buah);
+    // Kembalikan status 200 OK dan pesan berhasil
+    return Results.Ok($"Data {buah.Name} berhasil dihapus.");
 });
 
 
