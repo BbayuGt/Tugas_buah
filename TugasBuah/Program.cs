@@ -48,18 +48,20 @@ app.MapGet("/api/Buah", () =>
     })
     .WithName("/api/Buah");
 
-
-app.MapPut("/api/Buah/{id}", (int id, Buah updatedBuah) =>
+app.MapDelete("/api/Buah/{id}", (int id) =>
 {
+    // Mencari data berdasarkan Id
     var buah = listBuah.FirstOrDefault(x => x.Id == id);
 
+    // Jika id tidak ditemukan, kembalikan status 404 Not Found
     if (buah == null)
         return Results.NotFound("Data tidak ditemukan");
 
-    buah.Name = updatedBuah.Name;
+    // Jika ditemukan, hapus data tersebut dari list
+    listBuah.Remove(buah);
 
-    return Results.Ok(buah);
+    // Kembalikan status 200 OK dan pesan berhasil
+    return Results.Ok($"Data {buah.Name} berhasil dihapus.");
 });
-
 
 app.Run();
