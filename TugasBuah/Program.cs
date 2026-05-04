@@ -18,10 +18,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-List<Buah> listBuah = new List<Buah>
+app.MapPost("/api/Buah", (Buah buah) =>
 {
-    new Buah
+    if (string.IsNullOrWhiteSpace(buah.Name))
     {
+        return Results.BadRequest("Parameter 'name' wajib ada.");
 
         Id = 1, Name = "Erleazar Pandita Ramadhan"
     },
@@ -60,16 +61,16 @@ List<Buah> listBuah = new List<Buah>
         Name = "Muhammad Dhaifullah Safarullah"
 
     }
-};
-
-app.MapGet("/api/Buah", () =>
-    {
-        return listBuah;
-    })
-    .WithName("/api/Buah");
 
 app.MapDelete("/api/Buah/{id}", (int id) =>
+    return Results.Ok(buah);
+})
+.Accepts<Buah>("application/json")
+.Produces<Buah>(StatusCodes.Status200OK)
+.Produces<string>(StatusCodes.Status400BadRequest)
+.WithName("PostBuah");
 
+app.Run();
 
 app.MapPut("/api/Buah/{id}", (int id, Buah updatedBuah) =>
 {
