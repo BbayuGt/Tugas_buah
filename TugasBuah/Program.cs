@@ -2,15 +2,12 @@ using TugasBuah;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -18,76 +15,96 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapPost("/api/Buah", (Buah buah) =>
+var listBuah = new List<Buah>
+{
+    new() { Id = 1, Name = "Erleazar Pandita Ramadhan" },
+    new() { Id = 2, Name = "Rizkya Ramdan" },
+    new() { Id = 3, Name = "Fityah Bayodiansyah Harahap" },
+    new() { Id = 4, Name = "Abiyyu Yusak Ilyasa" },
+    new() { Id = 5, Name = "Muhammad Dhaifullah Safarullah" }
+};
+
+//GET
+app.MapGet("/api/buah", () =>
+{
+    return Results.Ok(listBuah);
+})
+.WithName("GetAllBuah")
+.Produces<List<Buah>>(StatusCodes.Status200OK);
+
+//GET
+app.MapGet("/api/buah/{id}", (int id) =>
+{
+    var buah = listBuah.FirstOrDefault(x => x.Id == id);
+
+    return buah is null
+        ? Results.NotFound("Data tidak ditemukan.")
+        : Results.Ok(buah);
+})
+.WithName("GetBuahById")
+.Produces<Buah>(StatusCodes.Status200OK)
+.Produces<string>(StatusCodes.Status404NotFound);
+
+//POST
+app.MapPost("/api/buah", (Buah buah) =>
 {
     if (string.IsNullOrWhiteSpace(buah.Name))
     {
-        return Results.BadRequest("Parameter 'name' wajib ada.");
-
-        Id = 1, Name = "Erleazar Pandita Ramadhan"
-    },
-    new Buah
-    {
-        Id = 2, Name = "Rizkya Ramdan"
-    },
-    new Buah
-    {
-        Id = 3, Name = "Fityah Bayodiansyah Harahap"
-    },
-    new Buah
-    {
-        Id = 4, Name = "Abiyyu Yusak Ilyasa"
-    },
-    new Buah
-    {
-        Id = 5, Name = "Muhammad Dhaifullah Safarullah"
-
-       
-    },
-    new Buah
-    {
-        Name = "Rizkya Ramdan"
-    },
-    new Buah
-    {
-        Name = "Fityah Bayodiansyah Harahap"
-    },
-    new Buah
-    {
-        Name = "Abiyyu Yusak Ilyasa"
-    },
-    new Buah
-    {
-        Name = "Muhammad Dhaifullah Safarullah"
-
+        return Results.BadRequest("Parameter 'name' wajib diisi.");
     }
 
-app.MapDelete("/api/Buah/{id}", (int id) =>
+    var newId = listBuah.Count == 0 ? 1 : listBuah.Max(x => x.Id) + 1;
+    buah.Id = newId;
+    listBuah.Add(buah);
+
+    return Results.Created($"/api/buah/{buah.Id}", buah);
+})
+.Accepts<Buah>("application/json")
+.WithName("CreateBuah")
+.Produces<Buah>(StatusCodes.Status201Created)
+.Produces<string>(StatusCodes.Status400BadRequest);
+
+//PUT
+app.MapPut("/api/buah/{id}", (int id, Buah updatedBuah) =>
+{
+    if (string.IsNullOrWhiteSpace(updatedBuah.Name))
+    {
+        return Results.BadRequest("Parameter 'name' wajib diisi.");
+    }
+
+    var buah = listBuah.FirstOrDefault(x => x.Id == id);
+
+    if (buah is null)
+    {
+        return Results.NotFound("Data tidak ditemukan.");
+    }
+
+    buah.Name = updatedBuah.Name;
+
     return Results.Ok(buah);
 })
 .Accepts<Buah>("application/json")
+.WithName("UpdateBuah")
 .Produces<Buah>(StatusCodes.Status200OK)
 .Produces<string>(StatusCodes.Status400BadRequest)
-.WithName("PostBuah");
+.Produces<string>(StatusCodes.Status404NotFound);
 
-app.Run();
-
-app.MapPut("/api/Buah/{id}", (int id, Buah updatedBuah) =>
+//DELETE
+app.MapDelete("/api/buah/{id}", (int id) =>
 {
-    // Mencari data berdasarkan Id
     var buah = listBuah.FirstOrDefault(x => x.Id == id);
 
-    // Jika id tidak ditemukan, kembalikan status 404 Not Found
-    if (buah == null)
-        return Results.NotFound("Data tidak ditemukan");
+    if (buah is null)
+    {
+        return Results.NotFound("Data tidak ditemukan.");
+    }
 
-    // Jika ditemukan, hapus data tersebut dari list
     listBuah.Remove(buah);
 
-    // Kembalikan status 200 OK dan pesan berhasil
-    return Results.Ok($"Data {buah.Name} berhasil dihapus.");
-});
-
-
+    return Results.Ok(new { message = $"Data {buah.Name} berhasil dihapus." });
+})
+.WithName("DeleteBuah")
+.Produces(StatusCodes.Status200OK)
+.Produces<string>(StatusCodes.Status404NotFound);
 
 app.Run();
