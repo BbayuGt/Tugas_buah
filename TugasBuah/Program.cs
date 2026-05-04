@@ -22,6 +22,7 @@ List<Buah> listBuah = new List<Buah>
 {
     new Buah
     {
+
         Id = 1, Name = "Erleazar Pandita Ramadhan"
     },
     new Buah
@@ -39,6 +40,25 @@ List<Buah> listBuah = new List<Buah>
     new Buah
     {
         Id = 5, Name = "Muhammad Dhaifullah Safarullah"
+
+       
+    },
+    new Buah
+    {
+        Name = "Rizkya Ramdan"
+    },
+    new Buah
+    {
+        Name = "Fityah Bayodiansyah Harahap"
+    },
+    new Buah
+    {
+        Name = "Abiyyu Yusak Ilyasa"
+    },
+    new Buah
+    {
+        Name = "Muhammad Dhaifullah Safarullah"
+
     }
 };
 
@@ -49,6 +69,9 @@ app.MapGet("/api/Buah", () =>
     .WithName("/api/Buah");
 
 app.MapDelete("/api/Buah/{id}", (int id) =>
+
+
+app.MapPut("/api/Buah/{id}", (int id, Buah updatedBuah) =>
 {
     // Mencari data berdasarkan Id
     var buah = listBuah.FirstOrDefault(x => x.Id == id);
@@ -63,5 +86,7 @@ app.MapDelete("/api/Buah/{id}", (int id) =>
     // Kembalikan status 200 OK dan pesan berhasil
     return Results.Ok($"Data {buah.Name} berhasil dihapus.");
 });
+
+
 
 app.Run();
